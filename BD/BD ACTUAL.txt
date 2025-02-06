@@ -1,0 +1,106 @@
+create database playa_auto;
+use playa_auto;
+CREATE TABLE marcas (
+  mar_id INTEGER NOT NULL,
+  mar_nom CHAR(30) NOT NULL,
+  PRIMARY KEY(mar_id)
+);
+
+CREATE TABLE tipo_condi (
+  tip_id INTEGER NOT NULL,
+  tip_descrip VARCHAR(255) NOT NULL,
+  PRIMARY KEY(tip_id)
+);
+
+CREATE TABLE usuarios (
+  usu_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  usu_nombre CHAR(20) NULL,
+  usu_login CHAR(20) NULL,
+  usu_pass CHAR(32) NULL,
+  usu_nivel INTEGER UNSIGNED NULL,
+  usu_estado CHAR(10) NULL,
+  PRIMARY KEY(usu_id)
+);
+INSERT INTO usuarios (usu_nombre, usu_login, usu_pass, usu_nivel, usu_estado)
+VALUES ('Admin', 'admin', MD5('123123'), 2, 'activo');
+
+
+CREATE TABLE vendedor (
+  ven_id INTEGER NOT NULL,
+  ven_nom CHAR(50) NOT NULL,
+  ven_ape CHAR(50) NOT NULL,
+  ven_ci INTEGER UNSIGNED NOT NULL,
+  ven_direcc VARCHAR(255) NOT NULL,
+  PRIMARY KEY(ven_id)
+);
+
+CREATE TABLE cliente (
+  cli_id INTEGER NOT NULL,
+  cli_nom CHAR(50) NOT NULL,
+  cli_ape CHAR(50) NOT NULL,
+  cli_ci INTEGER UNSIGNED NOT NULL,
+  cli_direcc VARCHAR(255) NOT NULL,
+  PRIMARY KEY(cli_id)
+);
+
+CREATE TABLE autos (
+  aut_id INTEGER NOT NULL,
+  mar_id INTEGER NOT NULL,
+  aut_modelo CHAR(20) NOT NULL,
+  aut_color CHAR(20) NULL,
+  aut_versio INTEGER NULL,
+  aut_motor CHAR(50) NULL,
+  aut_serie CHAR(50) NULL,
+  aut_placa CHAR(10) NOT NULL,
+  aut_km INTEGER NOT NULL,
+  aut_estado CHAR(30) NOT NULL,
+  PRIMARY KEY(aut_id),
+  FOREIGN KEY(mar_id)
+    REFERENCES marcas(mar_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE contrato (
+  con_id INTEGER NOT NULL,
+  usu_id INTEGER UNSIGNED NOT NULL,
+  ven_id INTEGER NOT NULL,
+  cli_id INTEGER NOT NULL,
+  aut_id INTEGER NOT NULL,
+  con_precio DECIMAL(10,0) NOT NULL,
+  con_metodo CHAR(50) NOT NULL,
+  con_fyh DATETIME NOT NULL,
+  PRIMARY KEY(con_id),
+  FOREIGN KEY(aut_id)
+    REFERENCES autos(aut_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(cli_id)
+    REFERENCES cliente(cli_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(ven_id)
+    REFERENCES vendedor(ven_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(usu_id)
+    REFERENCES usuarios(usu_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
+CREATE TABLE clausulas (
+  con_id INTEGER NOT NULL,
+  tip_id INTEGER NOT NULL,
+  cla_descrip VARCHAR(255) NOT NULL,
+  PRIMARY KEY(con_id, tip_id),
+  FOREIGN KEY(con_id)
+    REFERENCES contrato(con_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION,
+  FOREIGN KEY(tip_id)
+    REFERENCES tipo_condi(tip_id)
+      ON DELETE NO ACTION
+      ON UPDATE NO ACTION
+);
+
